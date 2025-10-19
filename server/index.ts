@@ -18,6 +18,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import { testGmailSMTPConnection } from './services/email';
 import { createServer } from "http";
 
+testGmailSMTPConnection();
 // This is for Vercel
 let handler: Express | undefined = undefined;
 
