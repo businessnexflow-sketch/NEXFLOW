@@ -8,8 +8,10 @@
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build",
     "build:server": "esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
-    "start": "node dist/index.js",
-    "vercel-build": "npm run build"
+    "start": "cross-env NODE_ENV=production node dist/index.js",
+    "vercel-build": "npm run build",
+    "render-build": "npm run build",
+    "render-start": "cross-env NODE_ENV=production node dist/index.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -113,5 +115,8 @@
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
