@@ -115,6 +115,36 @@ export default function OrderDetail({ orderId }: OrderDetailProps) {
     }
   };
 
+  const formatExactDate = (d?: string | Date | null) => {
+    if (!d) return "";
+    try {
+      return format(new Date(d), 'dd.MM.yyyy, HH:mm:ss');
+    } catch (e) {
+      return String(d);
+    }
+  };
+
+  const getDeliveryRange = (created?: string | Date | null, speed?: string | null) => {
+    if (!created || !speed) return null;
+    const createdDate = new Date(created);
+    let minDays = 0;
+    let maxDays = 0;
+    if (speed === 'standard') {
+      minDays = 7;
+      maxDays = 14;
+    } else if (speed === 'fast') {
+      minDays = 3;
+      maxDays = 5;
+    } else {
+      return null;
+    }
+    const minDate = new Date(createdDate);
+    minDate.setDate(minDate.getDate() + minDays);
+    const maxDate = new Date(createdDate);
+    maxDate.setDate(maxDate.getDate() + maxDays);
+    return `${format(minDate, 'dd.MM.yyyy')} — ${format(maxDate, 'dd.MM.yyyy')}`;
+  };
+
   return (
     <div className="space-y-6">
       {/* Order Header */}
@@ -128,6 +158,7 @@ export default function OrderDetail({ orderId }: OrderDetailProps) {
         <p className="text-sm text-muted-foreground flex items-center gap-2">
           <Calendar className="w-4 h-4" />
           Created {order.createdAt ? formatDistance(new Date(order.createdAt), new Date(), { addSuffix: true }) : ""}
+          <span className="ml-2 text-xs text-muted-foreground">({formatExactDate(order.createdAt)})</span>
           {order.updatedAt && order.createdAt && order.updatedAt !== order.createdAt && (
             <span>
               • Updated {formatDistance(new Date(order.updatedAt), new Date(), { addSuffix: true })}
@@ -149,6 +180,16 @@ export default function OrderDetail({ orderId }: OrderDetailProps) {
             <span className="font-medium">Name:</span>
             {order.fullName}
           </div>
+            {order.phone && (
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm">{order.phone}</span>
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <span className="font-medium">System ID:</span>
+              <span className="text-sm">{order.id}</span>
+            </div>
           <div className="flex items-center gap-2">
             <Mail className="w-4 h-4 text-muted-foreground" />
             <a href={`mailto:${order.email}`} className="text-primary hover:underline">
@@ -201,10 +242,38 @@ export default function OrderDetail({ orderId }: OrderDetailProps) {
               </div>
             </div>
           )}
+          {(!order.integrations || order.integrations.length === 0) && (
+            <div>
+              <span className="font-medium">Integrations:</span><br />
+              <div className="text-sm text-muted-foreground mt-1">No integrations selected</div>
+            </div>
+          )}
+
+          {/* Integration credentials/details */}
+          <div>
+            <span className="font-medium">Integration Data:</span><br />
+            {order.hasCredentials && Object.keys(order.hasCredentials || {}).length > 0 ? (
+              <div className="bg-muted p-2 rounded text-sm mt-1">
+                {Object.entries(order.hasCredentials).map(([key, val]) => (
+                  <div key={key} className="flex items-start gap-2">
+                    <span className="font-medium">{key}:</span>
+                    <span className="break-all">{String(val)}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground mt-1">No integration data provided</div>
+            )}
+          </div>
           {order.deliverySpeed && (
             <div>
               <span className="font-medium">Delivery Speed:</span><br />
-              {order.deliverySpeed === 'standard' ? 'Standard (7-14 days)' : 'Fast (3-5 days)'}
+              <div className="mt-1">
+                {order.deliverySpeed === 'standard' ? 'Standard (7-14 days)' : 'Fast (3-5 days)'}
+                {getDeliveryRange(order.createdAt, order.deliverySpeed) && (
+                  <div className="text-sm text-muted-foreground">Estimated delivery: {getDeliveryRange(order.createdAt, order.deliverySpeed)}</div>
+                )}
+              </div>
             </div>
           )}
           {order.priorityNotes && (
@@ -219,7 +288,7 @@ export default function OrderDetail({ orderId }: OrderDetailProps) {
       </div>
 
       {/* Files */}
-      {Array.isArray(order.attachedFiles) && order.attachedFiles.length > 0 && (
+      {Array.isArray(order.attachedFiles) && order.attachedFiles.length > 0 ? (
         <>
           <Separator />
           <div className="space-y-3">
@@ -243,6 +312,17 @@ export default function OrderDetail({ orderId }: OrderDetailProps) {
                 </div>
               ))}
             </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <Separator />
+          <div className="space-y-3">
+            <h4 className="font-medium flex items-center gap-2">
+              <Download className="w-4 h-4" />
+              Attached Files
+            </h4>
+            <div className="text-sm text-muted-foreground">No files uploaded</div>
           </div>
         </>
       )}

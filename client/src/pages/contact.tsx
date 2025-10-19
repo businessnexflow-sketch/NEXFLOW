@@ -13,7 +13,7 @@ export default function Contact() {
   };
 
   return (
-    <main className="pt-20">
+    <main className="pt-20 flex flex-col items-center">
       {/* Header */}
       <section className="py-20 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
@@ -34,17 +34,17 @@ export default function Contact() {
 
       {/* Contact Content */}
       <section className="py-20 bg-background">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12">
+  <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[60vh]">
             {/* Contact Information */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="space-y-8"
+                className="space-y-8 h-full flex flex-col justify-center items-center"
             >
               {/* Office Info */}
-              <Card className="glass-card card-hover">
+                <Card className="glass-card card-hover w-full max-w-xl mx-auto">
                 <CardContent className="p-6">
                   <div className="flex items-start space-x-4">
                     <div className="w-12 h-12 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center flex-shrink-0">
@@ -65,7 +65,7 @@ export default function Contact() {
               </Card>
 
               {/* Phone Info */}
-              <Card className="glass-card card-hover">
+              <Card className="glass-card card-hover w-full max-w-xl mx-auto">
                 <CardContent className="p-6">
                   <div className="flex items-start space-x-4">
                     <div className="w-12 h-12 bg-gradient-to-r from-secondary to-accent rounded-lg flex items-center justify-center flex-shrink-0">
@@ -85,7 +85,7 @@ export default function Contact() {
               </Card>
 
               {/* Email Info */}
-              <Card className="glass-card card-hover">
+              <Card className="glass-card card-hover w-full max-w-xl mx-auto">
                 <CardContent className="p-6">
                   <div className="flex items-start space-x-4">
                     <div className="w-12 h-12 bg-gradient-to-r from-accent to-primary rounded-lg flex items-center justify-center flex-shrink-0">
@@ -104,6 +104,7 @@ export default function Contact() {
               </Card>
 
               {/* WhatsApp Button */}
+              <div className="w-full max-w-xl mx-auto">
               <Button 
                 onClick={handleWhatsAppClick}
                 className="w-full bg-green-500 hover:bg-green-600 text-white px-6 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3 font-firago"
@@ -114,33 +115,12 @@ export default function Contact() {
                 </svg>
                 <span>{georgianContent.contact.whatsapp}</span>
               </Button>
+              </div>
             </motion.div>
 
-            {/* Map Container */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <Card className="glass-card h-full min-h-[500px]">
-                <CardContent className="p-4 h-full">
-                  <div className="w-full h-full bg-muted rounded-lg overflow-hidden">
-                    {/* Google Maps Embed */}
-                    <iframe
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2978.123456789!2d44.7865!3d41.7151!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDHCsDQyJzU0LjQiTiA0NMKwNDcnMTEuNCJF!5e0!3m2!1sen!2sge!4v1234567890123!5m2!1sen!2sge"
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0, minHeight: '460px' }}
-                      allowFullScreen
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      title="n8n ავტომატიზაცია - ოფისის მდებარეობა"
-                      data-testid="google-maps"
-                    ></iframe>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+            <div className="h-full flex items-center justify-center" aria-hidden>
+              {/* intentionally left blank to preserve two-column layout */}
+            </div>
           </div>
         </div>
       </section>
@@ -163,7 +143,7 @@ export default function Contact() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-8 justify-center max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 justify-center items-center max-w-4xl mx-auto">
             {/* Giorgi Natsvlishvili */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}

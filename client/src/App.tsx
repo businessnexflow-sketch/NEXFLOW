@@ -13,6 +13,7 @@ import Team from "@/pages/team";
 import Admin from "@/pages/admin";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
+import ScrollToTop from "@/components/layout/scroll-to-top";
 
 function Router() {
   return (
@@ -35,6 +36,7 @@ function App() {
       <TooltipProvider>
         <div className="min-h-screen bg-background">
           <Header />
+          <ScrollToTop behavior="auto" />
           <Router />
           <Footer />
         </div>

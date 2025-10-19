@@ -105,6 +105,25 @@ export default function Services() {
         "დოკუმენტაცია და ტრენინგი"
       ]
     }
+    ,
+    {
+      title: "Facebook / Instagram / YouTube Auto Poster ავტომატიზაციის Workflow",
+      description: "ავტომატურად გააზიარე პოსტები, ვიდეოები და სტორიები ერთიანი პანელიდან Facebook, Instagram და YouTube-ზე.",
+      icon: Bot,
+      category: "custom",
+      detailedDescription: `ეს სისტემა საშუალებას გაძლევთ ავტომატურად გააზიაროთ პოსტები, ვიდეოები და სტორიები Facebook-ზე, Instagram-ზე და YouTube-ზე ერთიანი მართვის პანელიდან. იგი შექმნილია დროის დასაზოგად და კონტენტის მართვის პროცესის გასამარტივებლად — განსაკუთრებით იმ ბიზნესებისა და კონტენტ-კრეატორებისთვის, რომლებიც რამდენიმე პლატფორმაზე ერთდროულად აქტიურობენ.`,
+      features: [
+        "დაგეგმილი პოსტინგი — კონტენტის წინასწარ დაგეგმვა ზუსტად მითითებულ დღესა და საათზე",
+        "ავტომატური გადაზიარება — ერთი პლატფორმაზე ატვირთული პოსტი ავტომატურად ქვეყნდება დანარჩენ არხებზე",
+        "Smart Caption Generator (AI) — ავტომატურად გენერირებული აღწერები და ჰეშთეგები",
+        "ანალიტიკა და რეპორტები — ნახვები, ჩართულობა, მოწონებები და კომენტარები ერთ პანელში",
+        "სოციალური მედიის API-ებთან ინტეგრაცია (Meta, YouTube) — უსაფრთხო და ოფიციალური კავშირი",
+        "სურათების და ვიდეოების ოპტიმიზაცია — ფორმატების ავტომატური მორგება (16:9, 1:1, 9:16)",
+        "კონტენტის ბიბლიოთეკა — თქვენი ფოტოები, ვიდეოები და ტექსტები ინახება უსაფრთხოდ",
+        "Auto Hashtag Generator — თემის მიხედვით ჰეშთეგების გენერაცია",
+        "შეტყობინებები და შეცდომების მონიტორინგი — ასისტირება თუ პოსტი ვერ გამოაქვეყნდა ან საჭიროა ახალი ავტორიზაცია"
+      ]
+    }
   ];
 
   const filters = [
@@ -198,13 +217,13 @@ export default function Services() {
                       {georgianContent.services.items[0].cta} →
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
-                    <DialogHeader>
+                  <DialogContent className="max-w-2xl max-h-[70vh] overflow-auto">
+                    <DialogHeader className="sticky top-0 bg-background/60 backdrop-blur-sm">
                       <DialogTitle className="text-2xl font-bold font-firago">
                         {service.title}
                       </DialogTitle>
                     </DialogHeader>
-                    <div className="space-y-6">
+                    <div className="space-y-6 p-4">
                       <p className="text-muted-foreground font-firago">
                         {service.detailedDescription}
                       </p>
