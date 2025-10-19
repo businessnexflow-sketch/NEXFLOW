@@ -98,6 +98,17 @@ app.use((req, res, next) => {
       log(`serving on port ${port}`);
     });
   }
+
+  // Ensure we also listen on the provided PORT when running in production
+  // (e.g., on Render where NODE_ENV=production). We keep the development
+  // listener above intact — this block only runs when not in development.
+  if (app.get("env") !== "development") {
+    const port = parseInt(process.env.PORT || '5000', 10);
+    const server = createServer(app);
+    server.listen(port, () => {
+      log(`serving on port ${port}`);
+    });
+  }
 })();
 
 export default async (req: Request, res: Response, next: NextFunction) => {
