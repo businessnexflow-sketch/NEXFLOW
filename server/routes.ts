@@ -7,6 +7,9 @@ import { sendOrderNotificationToSlack } from "./services/slack";
 import multer from "multer";
 import path from "path";
 
+// Type alias to avoid Express namespace usage
+type MulterFile = Express.Multer.File;
+
 const upload = multer({
   dest: 'uploads/',
   limits: {
@@ -26,65 +29,31 @@ const upload = multer({
 export async function registerRoutes(app: Express): Promise<Server> {
   // Order management routes
   app.post("/api/orders", upload.array('files', 5), async (req, res) => {
-    /**
-     * @description
-     * **Root Cause & Serverless Model Explanation:**
-     * The `FUNCTION_INVOCATION_FAILED` error on Vercel indicates an unhandled exception that crashed the serverless function process.
-     * In a serverless environment, the function is expected to return an HTTP response for every invocation.
-     * If an error occurs and is not explicitly caught and handled (e.g., by sending a 500 response),
-     * the function runtime itself terminates, leading to a platform-level `FUNCTION_INVOCATION_FAILED`.
-     *
-     * The specific `TypeError: Cannot read properties of undefined (reading 'name')` implies that
-     * a property (`name`) was being accessed on an `undefined` object (likely `user.profile`).
-     * This typically happens when incoming data (`req.body` or other inputs) does not match
-     * the expected structure, causing a nested object to be `undefined` when code tries to access its properties.
-     *
-     * **The Fix:**
-     * This `try...catch` block wraps the entire processing logic for the `/api/orders` route.
-     * It ensures that any synchronous or asynchronous errors (including `TypeErrors` from undefined property access)
-     * are caught before they can crash the function.
-     *
-     * Upon catching an error, it logs the `req.body` and the full error stack, which is crucial for debugging in Vercel logs.
-     * It then sends a controlled `500 Internal Server Error` response to the client, preventing the `FUNCTION_INVOCATION_FAILED`
-     * and ensuring a consistent API response.
-     *
-     * **Warning Signs & Future Prevention:**
-     * - Unhandled exceptions leading to process crashes in serverless functions.
-     * - `TypeError: Cannot read properties of undefined` in runtime logs.
-     * - Missing `try...catch` or `.catch()` for asynchronous operations in critical paths.
-     * - Assumptions about incoming data structure (always validate input rigorously, e.g., with Zod schemas).
-     *
-     * Always validate incoming request bodies (like `req.body`) against your expected schemas.
-     * Use optional chaining (`?.`) when accessing potentially undefined nested properties where appropriate,
-     * but prefer robust validation to ensure data integrity.
-     */
     try {
       console.log('Request body:', req.body);
       console.log('Request files:', req.files);
 
       // Parse JSON fields that come as strings from FormData
-      const parsedBody = { ...req.body };
+      const parsedBody = { ...req.body } as Record<string, unknown>;
       if (parsedBody.integrations && typeof parsedBody.integrations === 'string') {
         try {
-          parsedBody.integrations = JSON.parse(parsedBody.integrations);
+          parsedBody.integrations = JSON.parse(parsedBody.integrations as string);
         } catch (e) {
           console.error('Failed to parse integrations:', e);
-          // Consider returning an error response here if parsing is critical
         }
       }
       if (parsedBody.hasCredentials && typeof parsedBody.hasCredentials === 'string') {
         try {
-          parsedBody.hasCredentials = JSON.parse(parsedBody.hasCredentials);
+          parsedBody.hasCredentials = JSON.parse(parsedBody.hasCredentials as string);
         } catch (e) {
           console.error('Failed to parse hasCredentials:', e);
-          // Consider returning an error response here if parsing is critical
         }
       }
 
       const orderData = insertOrderSchema.parse(parsedBody);
 
       // Handle file uploads
-      const files = req.files as Express.Multer.File[];
+      const files = req.files as MulterFile[];
       const attachedFiles: AttachedFile[] = files?.map(file => ({
         originalName: file.originalname,
         filename: file.filename,
@@ -122,7 +91,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/orders", async (req, res) => {
+  app.get("/api/orders", async (_req, res) => {
     try {
       const orders = await storage.getAllOrders();
       res.json(orders);

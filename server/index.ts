@@ -1,4 +1,4 @@
-import express, { type Request, Response, NextFunction } from "express";
+import express, { type Request, Response, NextFunction, type Express } from "express";
 // Load environment variables from .env or env in development
 import dotenv from "dotenv";
 import fs from "fs";
@@ -18,7 +18,6 @@ import { setupVite, serveStatic, log } from "./vite";
 import { testGmailSMTPConnection } from './services/email';
 import { createServer } from "http";
 
-testGmailSMTPConnection();
 // This is for Vercel
 let handler: Express | undefined = undefined;
 
@@ -63,14 +62,11 @@ app.use((req, res, next) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
-    console.error(err); // Log the error for debugging
+    console.error(err);
     res.status(status).json({ message });
-    // Do NOT throw err after sending a response in a serverless environment
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
+  // only setup vite in development, after route setup
   if (app.get("env") === "development") {
     await setupVite(app, createServer(app));
   } else {
@@ -81,29 +77,13 @@ app.use((req, res, next) => {
   testGmailSMTPConnection();
 
   // In Vercel, we export the app and don't listen on a port
-  // The Vercel runtime will handle the incoming requests.
-  // This should only be defined once when not in dev.
   if (!handler) {
     handler = app;
   }
 
-  // During development, we still listen on a port
-  if (app.get("env") === "development") {
-    // ALWAYS serve the app on the port specified in the environment variable PORT
-    // Other ports are firewalled. Default to 5000 if not specified.
-    // this serves both the API and the client.
-    // It is the only port that is not firewalled.
-    const port = parseInt(process.env.PORT || '5000', 10);
-    const server = createServer(app);
-    server.listen(port, () => {
-      log(`serving on port ${port}`);
-    });
-  }
-
-  // Ensure we also listen on the provided PORT when running in production
-  // (e.g., on Render where NODE_ENV=production). We keep the development
-  // listener above intact — this block only runs when not in development.
-  if (app.get("env") !== "development") {
+  // Listen on a port when not in Vercel's serverless invocation context
+  const shouldListen = app.get("env") === "development" || process.env.FORCE_LISTEN === '1';
+  if (shouldListen) {
     const port = parseInt(process.env.PORT || '5000', 10);
     const server = createServer(app);
     server.listen(port, () => {
@@ -114,8 +94,6 @@ app.use((req, res, next) => {
 
 export default async (req: Request, res: Response, next: NextFunction) => {
   if (!handler) {
-    // This code will only run once on a cold start in the serverless environment
-    // It initializes the Express app and registers routes.
     await registerRoutes(app);
     handler = app;
   }

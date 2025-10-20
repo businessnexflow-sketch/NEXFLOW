@@ -141,7 +141,7 @@ export async function sendOrderNotificationEmail(
     const statuses: Record<string, {label: string, color: string}> = {
       'new': {label: 'ახალი', color: '#28a745'},
       'in_review': {label: 'განხილვაში', color: '#007bff'},
-      'in_progress': {label: 'მუშავდება', color: '#ffc107'},
+      'in_progress': {label: 'მუშაობს', color: '#ffc107'},
       'delivered': {label: 'მიწოდებული', color: '#17a2b8'},
       'closed': {label: 'დახურული', color: '#6c757d'}
     };
